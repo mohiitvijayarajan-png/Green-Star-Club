@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green Star Club · task board</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+    body {
+      margin: 0;
+      background: #e3f1e3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .app-wrapper {
+      max-width: 1000px;
+      width: 100%;
+      background: #f8fff8;
+      box-shadow: 0 10px 30px rgba(0, 50, 0, 0.1);
+      min-height: 100vh;
+    }
+    header {
+      background: #0f5c2e;
+      color: white;
+      padding: 22px 24px;
+      text-align: center;
+      border-bottom: 5px solid #8bc34a;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.3rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    header p {
+      margin: 10px 0 0;
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+    .container {
+      padding: 24px 26px;
+    }
+    .card {
+      background: white;
+      padding: 22px 26px;
+      margin: 24px 0;
+      border-radius: 32px;
+      box-shadow: 0 8px 20px rgba(20, 80, 30, 0.08);
+      border: 1px solid #c8e6c9;
+      transition: all 0.15s;
+    }
+    .card:hover {
+      box-shadow: 0 12px 24px rgba(30, 90, 30, 0.12);
+    }
+    input {
+      padding: 14px 22px;
+      font-size: 1rem;
+      border: 2px solid #b9dfb9;
+      border-radius: 60px;
+      width: 70%;
+      max-width: 280px;
+      margin-right: 12px;
+      outline: none;
+      background: #fafffa;
+    }
+    input:focus {
+      border-color: #1e7f3f;
+    }
+    button {
+      background: #1e7f3f;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 60px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 50, 0, 0.2);
+      transition: 0.15s;
+      border: 1px solid #5faf6f;
+      margin: 6px 8px 6px 0;
+    }
+    button:hover {
+      background: #0f642b;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 70, 0, 0.2);
+    }
+    button.small {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      background: #2b6b3b;
+    }
+    .points-badge {
+      font-size: 46px;
+      font-weight: 800;
+      color: #0f5c2e;
+      background: #e2f3df;
+      display: inline-block;
+      padding: 12px 48px;
+      border-radius: 80px;
+      margin: 10px 0;
+      border: 3px dashed #6bb86b;
+    }
+    /* task grid */
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      margin: 20px 0 10px;
+    }
+    .task-item {
+      background: #f1fcf1;
+      border-radius: 28px;
+      padding: 18px 15px;
+      border: 2px solid #b2d8b2;
+      box-shadow: 0 3px 8px rgba(0,40,0,0.05);
+      transition: 0.1s;
+      display: flex;
+      flex-direction: column;
+    }
+    .task-item.completed {
+      background: #d4eed4;
+      border-color: #0f7b3a;
+      opacity: 0.95;
+      order: -1;
+    }
+    .task-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .task-icon {
+      font-size: 2rem;
+      background: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #6da56d;
+    }
+    .task-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #154f23;
+      line-height: 1.2;
+    }
+    .task-desc {
+      color: #2f5737;
+      margin: 8px 0 15px;
+      font-size: 0.9rem;
+      padding-left: 6px;
+    }
+    .task-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+    .task-points {
+      background: #276b37;
+      color: white;
+      padding: 4px 16px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .complete-btn {
+      background: #427e4a;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: none;
+      color: white;
+      cursor: pointer;
+      box-shadow: none;
+    }
+    .complete-btn.completed {
+      background: #9bc09b;
+      color: #1e4623;
+      cursor: default;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .activity {
+      background: #e1f5e6;
+      padding: 14px 18px;
+      margin: 12px 0;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 500;
+      border-left: 8px solid #0f5c2e;
+    }
+    #list:empty::before {
+      content: "✅ completed tasks appear here …";
+      color: #4b7b5e;
+      font-style: italic;
+      display: block;
+      padding: 20px;
+      background: #effaef;
+      border-radius: 50px;
+      text-align: center;
+    }
+    .challenge-card {
+      background: #d8f0d8;
+      border: 2px solid #2e7d4e;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .challenge-badge {
+      background: gold;
+      padding: 8px 28px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1.6rem;
+    }
+    .footer-note {
+      text-align: center;
+      color: #386f44;
+      margin: 30px 0 10px;
+    }
+    @media (max-width: 600px) {
+      input { width: 100%; margin-bottom: 12px; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+  <header>
+    <h1>🌍 Green Star Club · EcoTasks</h1>
+    <p>complete missions · track impact · level up</p>
+  </header>
+
+  <div class="container">
+    <!-- login card -->
+    <div class="card">
+      <h2 style="margin:0 0 12px;">🔐 Student login</h2>
+      <div style="display: flex; flex-wrap: wrap; align-items: center;">
+        <input id="name" placeholder="Your name (e.g. Maya)" value="Alex">
+        <button onclick="login()">🚀 Unlock dashboard</button>
+      </div>
+    </div>
+
+    <!-- dashboard panel (hidden) -->
+    <div class="card" id="dashboard" style="display: none;">
+      <h2 id="welcome"></h2>
+      <p style="font-size:1.2rem;">⭐ total eco points</p>
+      <div class="points-badge" id="points">0</div>
+      <div style="display: flex; gap: 18px; flex-wrap: wrap;">
+        <span style="background:#d9f0d9; padding:6px 22px; border-radius:40px;" id="levelDisplay">🌱 starter</span>
+        <span style="background:#d9f0d9; padding:6px 22px; border-radius:40px;">🏅 next at 40 pts</span>
+      </div>
+    </div>
+
+    <!-- TASK MISSIONS (exactly 7 tasks) -->
+    <div class="card" id="tasksCard" style="display: none;">
+      <h2 style="display: flex; align-items: center; gap: 8px;">🗂️ Eco missions <span style="font-size:1rem; background:#c5e0c5; padding:5px 15px; border-radius: 30px;" id="taskProgress">0/7 completed</span></h2>
+      <div class="mission-grid" id="taskGrid">
+        <!-- 7 tasks injected via js but we build static for clarity, then bind functions -->
+      </div>
+      <p style="margin-bottom:0; color: #2e673e;">✅ click to complete & earn points — each mission once</p>
+    </div>
+
+    <!-- activity history & challenge -->
+    <div class="card" id="history" style="display: none;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <h2>📋 completion history</h2>
+        <button class="small" onclick="clearHistory()">🗑️ clear</button>
+      </div>
+      <div id="list"></div>
+    </div>
+
+    <!-- challenge card -->
+    <div class="card challenge-card" id="challenge" style="display: none;">
+      <span style="font-weight:600;">🏆 weekly Student challenge</span>
+      <span class="challenge-badge" id="challengeCount">0/4</span>
+      <div style="width:100%; margin-top:12px;">
+        <p>complete 4 different missions this week</p>
+        <div style="background:#b2d8b2; height:12px; border-radius:12px;">
+          <div id="challengeBar" style="background:#1e7f3f; height:12px; width:0%; border-radius:12px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note">🌿 each task helps build a greener future</div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ---------- DEFINE THE 7 TASKS (exact wording) ----------
+    const TASKS = [
+      { name: 'Survey & poster about nature',        points: 12, icon: '📊', desc: 'Document local flora or create awareness poster' },
+      { name: 'Plant and identify',                   points: 15, icon: '🌱', desc: 'Plant a tree/shrub & identify species' },
+      { name: 'Food web & observe',                    points: 10, icon: '🕸️', desc: 'Draw a food web or observe ecosystem interaction' },
+      { name: 'Recycling initiative',                  points: 14, icon: '♻️', desc: 'Start recycling bin / upcycle project' },
+      { name: 'Energy & water track',                   points: 12, icon: '💡', desc: 'Track home energy or water use for 3 days' },
+      { name: 'Climate project',                        points: 18, icon: '🌦️', desc: 'Create a climate action plan / model' },
+      { name: 'Community project',                       points: 20, icon: '🤝', desc: 'Engage neighbors in green activity' },
+      { name: 'App & vr learning',                       points: 8,  icon: '📱', desc: 'Explore eco app or VR nature experience' }
+    ];  // exactly 8? wait — we need 7 as requested: but above I have 8, let's merge community & app? but list says: 1.survey&poster 2.plant&identify 3.food web 4.recycling 5.energy&water 6.climate project 7.community project 8.app&vr? That’s 8 tasks. double-check: original prompt: "1. Survey & poster about of nature 2. Plant and identify 3. Food web & observe 4. Recycling initiative. 4. Energy & water track 5. Climate project 6. Community project 6. App & vr learning" there are two 4. and two 6. but distinct: I count 8 unique. I'll keep all 8 to respect distinct items. but the user said "7 tasks" in description? let's include all meaningful: i'll keep 8, because it's richer. but they explicitly wrote 7 tasks but listed 8. we'll display all 8 to cover all. i'll adjust grid. i'll call them "8 missions"
+    // for clarity, I'll include them all and display 8.
+
+    // but we want the 7 tasks, but they wrote 8 points. I'll keep 8 but title says 7, but I'll present 8. it's fine.
+    // I need exactly what they wrote: i see duplicate numbering, but tasks are: 1 survey poster,2 plant identify,3 food web,4 recycling,5 energy water,6 climate project,7 community,8 app vr. That's 8 tasks. So i'll keep 8. 
+
+    let points = 0;
+    let studentName = '';
+    let completedTasks = new Array(TASKS.length).fill(false);
+    let activityLog = []; // store strings for history (or use DOM directly)
+    let weeklyChallengeCount = 0; // counts distinct completed tasks (max 4)
+
+    // DOM elements
+    const dashboard = document.getElementById('dashboard');
+    const tasksCard = document.getElementById('tasksCard');
+    const historyDiv = document.getElementById('history');
+    const challengeDiv = document.getElementById('challenge');
+    const welcomeEl = document.getElementById('welcome');
+    const pointsSpan = document.getElementById('points');
+    const listContainer = document.getElementById('list');
+    const levelSpan = document.getElementById('levelDisplay');
+    const challengeCountSpan = document.getElementById('challengeCount');
+    const challengeBar = document.getElementById('challengeBar');
+    const taskProgressSpan = document.getElementById('taskProgress');
+    const taskGrid = document.getElementById('taskGrid');
+
+    // render tasks in grid
+    function renderTasks() {
+      taskGrid.innerHTML = '';
+      TASKS.forEach((task, index) => {
+        const completed = completedTasks[index];
+        const taskDiv = document.createElement('div');
+        taskDiv.className = `task-item ${completed ? 'completed' : ''}`;
+        taskDiv.setAttribute('data-index', index);
+
+        taskDiv.innerHTML = `
+          <div class="task-header">
+            <span class="task-icon">${task.icon}</span>
+            <span class="task-title">${task.name}</span>
+          </div>
+          <div class="task-desc">${task.desc}</div>
+          <div class="task-footer">
+            <span class="task-points">+${task.points} pts</span>
+            ${!completed ? 
+              '<button class="complete-btn" onclick="window.completeTask('+index+')">✔️ complete</button>' : 
+              '<button class="complete-btn completed" disabled>✅ done</button>'}
+          </div>
+        `;
+        taskGrid.appendChild(taskDiv);
+      });
+      updateTaskProgress();
+    }
+
+    // complete task function (global)
+    window.completeTask = function(index) {
+      if (!studentName) {
+        alert('🔒 Please log in first');
+        return;
+      }
+      if (completedTasks[index]) {
+        alert('Task already completed');
+        return;
+      }
+      // mark completed
+      completedTasks[index] = true;
+      const task = TASKS[index];
+      points += task.points;
+
+      // log history
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      const dateStr = now.toLocaleDateString([], { month:'short', day:'numeric' });
+      const logEntry = document.createElement('div');
+      logEntry.className = 'activity';
+      logEntry.innerHTML = `<span>${task.icon} ${task.name}</span> <span>+${task.points} pts · ${dateStr} ${timeStr}</span>`;
+      listContainer.appendChild(logEntry);
+
+      // weekly challenge: count distinct completed tasks (but max 4)
+      let totalCompleted = completedTasks.filter(v => v).length;
+      weeklyChallengeCount = Math.min(totalCompleted, 4); // cap at 4 for display
+
+      // refresh UI
+      refreshUI();
+      renderTasks(); // re-render to update buttons
+    };
+
+    // login
+    window.login = function() {
+      const nameInput = document.getElementById('name').value.trim();
+      if (nameInput === '') {
+        alert('Enter your name');
+        return;
+      }
+      studentName = nameInput;
+      dashboard.style.display = 'block';
+      tasksCard.style.display = 'block';
+      historyDiv.style.display = 'block';
+      challengeDiv.style.display = 'block';
+      welcomeEl.innerHTML = `🌞 Welcome, ${studentName} · let's act!`;
+
+      // initial render tasks if not yet
+      renderTasks();
+      refreshUI();
+    };
+
+    // clear history (but also reset tasks? we decide to reset everything)
+    window.clearHistory = function() {
+      if (listContainer.children.length > 0 || completedTasks.some(v => v)) {
+        if (confirm('Clear all history, points and reset tasks?')) {
+          // reset everything
+          points = 0;
+          completedTasks = new Array(TASKS.length).fill(false);
+          activityLog = [];
+          listContainer.innerHTML = '';
+          weeklyChallengeCount = 0;
+          renderTasks();
+          refreshUI();
+        }
+      } else {
+        alert('No history to clear');
+      }
+    };
+
+    // refresh points, level, challenge bar, task progress
+    function refreshUI() {
+      pointsSpan.innerText = points;
+      // level
+      if (points < 20) levelSpan.innerText = '🌱 eco-starter';
+      else if (points < 45) levelSpan.innerText = '🌿 green agent';
+      else if (points < 75) levelSpan.innerText = '🍃 climate pal';
+      else levelSpan.innerText = '🌟 earth guardian';
+
+      // challenge based on weeklyChallengeCount (max 4)
+      challengeCountSpan.innerText = `${weeklyChallengeCount}/4`;
+      let percent = (weeklyChallengeCount / 4) * 100;
+      challengeBar.style.width = percent + '%';
+
+      // task progress
+      updateTaskProgress();
+    }
+
+    function updateTaskProgress() {
+      const totalCompleted = completedTasks.filter(v => v).length;
+      taskProgressSpan.innerText = `${totalCompleted}/${TASKS.length} completed`;
+    }
+
+    // initial hide panels
+    dashboard.style.display = 'none';
+    tasksCard.style.display = 'none';
+    historyDiv.style.display = 'none';
+    challengeDiv.style.display = 'none';
+
+    // Pre-populate a friendly name for demo
+    document.getElementById('name').value = 'Jordan';
+
+    // attach enter key
+    document.getElementById('name').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') window.login();
+    });
+
+    // expose refresh for internal calls
+    window.refreshUI = refreshUI;
+  })();
+</script>
+<!-- small note: exactly 8 tasks from the list (survey, plant, food web, recycling, energy & water, climate project, community project, app & vr) -->
+</body>
+</html>
